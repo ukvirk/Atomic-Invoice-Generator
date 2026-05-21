@@ -1,10 +1,9 @@
 /* DESIGN SYSTEM MANUAL BRAND VARIABLES */
 :root {
-  --bg-workspace: #0f172a;      /* Deep slate background for contrast */
-  --bg-sidebar: #1e293b;        /* Lighter slate for structural form pane */
-  --bg-sheet: #ffffff;          /* Pure white for the physical print canvas */
-  --accent-purple: #7c3aed;     /* Primary action state and interactive indicators */
-  --accent-purple-hover: #6d28d9;
+  --bg-workspace: #0f172a;
+  --bg-sidebar: #1e293b;
+  --bg-sheet: #ffffff;
+  --accent-purple: #7c3aed;
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --text-dark: #0f172a;
@@ -24,13 +23,13 @@ body, html {
   font-family: var(--font-stack);
   background-color: var(--bg-workspace);
   color: var(--text-main);
-  overflow: hidden; /* Prevents whole-page scrolling. Only inner sections scroll. */
+  overflow: hidden;
 }
 
 /* SPLIT-PANE APP LAYOUT */
 #app {
   display: grid;
-  grid-template-columns: 400px 1fr; /* Sidebar is strictly fixed at 400px; preview takes remaining room */
+  grid-template-columns: 400px 1fr;
   width: 100vw;
   height: 100vh;
 }
@@ -63,7 +62,7 @@ body, html {
 
 .form-scroll-container {
   flex: 1;
-  overflow-y: auto; /* Forms stay scrollable if they get long */
+  overflow-y: auto;
   padding: 24px;
 }
 
@@ -83,7 +82,7 @@ body, html {
   background-color: var(--bg-sheet);
   color: var(--text-dark);
   width: 100%;
-  max-width: 800px; /* Limits size to exact A4 proportions at high resolutions */
+  max-width: 800px;
   min-height: 1000px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   border-radius: 6px;
@@ -92,10 +91,62 @@ body, html {
   flex-direction: column;
 }
 
-/* EMPTY BLANK STATE WRAPPER */
 .empty-state-notice {
   margin: auto;
   text-align: center;
   color: var(--text-muted);
   font-size: 15px;
+}
+
+/* FORM COMPONENT ATOMS */
+.form-group-section {
+  margin-bottom: 32px;
+}
+
+.form-group-section h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.input-atom {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-atom label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+/* THE 44PX TAP TARGET RULE EXECUTED */
+.input-atom input,
+.input-atom select {
+  height: 44px;
+  background-color: #0f172a;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0 14px;
+  font-size: 14px;
+  color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.input-atom input::placeholder {
+  color: #475569;
+}
+
+/* THE HIGH-CONTRAST FOCUS INDICATOR */
+.input-atom input:focus,
+.input-atom select:focus {
+  outline: none;
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
 }
