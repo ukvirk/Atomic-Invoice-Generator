@@ -11,7 +11,7 @@
   --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* RESET STATE */
+/* RESET CONTROL */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -20,32 +20,35 @@
 
 body, html {
   height: 100%;
+  width: 100%;
   font-family: var(--font-stack);
   background-color: var(--bg-workspace);
   color: var(--text-main);
-  overflow: hidden;
+  overflow: hidden; /* Lock the viewport completely */
 }
 
-/* SPLIT-PANE APP LAYOUT */
+/* ANTI-COLLAPSE GRID WORKSPACE */
 #app {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 420px 1fr;
   width: 100vw;
   height: 100vh;
 }
 
-/* INTERACTIVE SIDEBAR DECK */
+/* CONTROL SIDEBAR PANE */
 .control-sidebar {
   background-color: var(--bg-sidebar);
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .sidebar-header {
   padding: 24px;
   border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .sidebar-header h2 {
@@ -60,47 +63,24 @@ body, html {
   margin-top: 4px;
 }
 
+/* MASTER SIDEBAR SCROLL WINDOW */
 .form-scroll-container {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto; /* Handles master container scrolling if screen height is tiny */
   padding: 24px;
 }
 
-/* LIVE PREVIEW CANVAS WORKSPACE */
-.preview-workspace {
-  flex: 1;
-  height: 100%;
-  overflow-y: auto;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px;
+/* INNER DECK FOR ENDLESS ITEMS ROW SCROLLING */
+.items-overflow-deck {
+  max-height: 280px; /* Limits the row height zone */
+  overflow-y: auto;  /* Lets rows scroll internally without breaking layout blocks */
+  margin-bottom: 12px;
+  padding-right: 4px;
 }
 
-/* THE INVOICE SHEET TARGET (MIMICS STANDARD A4 SHEET) */
-.invoice-paper-sheet {
-  background-color: var(--bg-sheet);
-  color: var(--text-dark);
-  width: 100%;
-  max-width: 800px;
-  min-height: 1000px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  border-radius: 6px;
-  padding: 60px;
-  display: flex;
-  flex-direction: column;
-}
-
-.empty-state-notice {
-  margin: auto;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 15px;
-}
-
-/* FORM COMPONENT ATOMS */
+/* FORM ATOMS */
 .form-group-section {
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .form-group-section h3 {
@@ -108,12 +88,12 @@ body, html {
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--text-muted);
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   font-weight: 700;
 }
 
 .input-atom {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   display: flex;
   flex-direction: column;
 }
@@ -122,10 +102,9 @@ body, html {
   font-size: 13px;
   font-weight: 500;
   color: var(--text-main);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
-/* THE 44PX TAP TARGET RULE EXECUTED */
 .input-atom input,
 .input-atom select {
   height: 44px;
@@ -139,41 +118,52 @@ body, html {
   width: 100%;
 }
 
-.input-atom input::placeholder {
-  color: #475569;
+.input-atom input:focus,
+.input-atom select:focus {
+  outline: none;
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
 }
 
-/* DYNAMIC ROW LAYOUT CONSTRAINTS */
+/* ITEM ROW MATRIX BUILD */
 .item-row-atom {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr auto; /* Name gets more space; Qty, Price, and Delete button get equal shares */
-  gap: 8px;
+  grid-template-columns: 2.2fr 1fr 1.2fr auto;
+  gap: 6px;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
-/* HIGH-RISK DESTRUCTIVE ACTION ANCHOR (DELETE BUTTON) */
+.item-row-atom input {
+  height: 44px;
+  background-color: #0f172a;
+  border: 1px solid var(--border-color);
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 13px;
+  width: 100%;
+}
+
 .delete-row-btn {
   height: 44px;
   width: 44px;
   background-color: #334155;
   border: 1px solid var(--border-color);
-  color: #ef4444; /* Alert red */
+  color: #ef4444;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  transition: background-color 0.2s ease;
 }
 
 .delete-row-btn:hover {
-  background-color: #7f1d1d; /* Dark crimson warning state */
+  background-color: #7f1d1d;
   color: #ffffff;
 }
 
-/* PRIMARY AND SECONDARY SYSTEM INTERACTIVE ANCHORS */
 .btn-secondary {
   width: 100%;
   height: 44px;
@@ -184,7 +174,6 @@ body, html {
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  transition: all 0.2s ease;
 }
 
 .btn-secondary:hover {
@@ -192,10 +181,29 @@ body, html {
   border-style: solid;
 }
 
-/* THE HIGH-CONTRAST FOCUS INDICATOR */
-.input-atom input:focus,
-.input-atom select:focus {
-  outline: none;
-  border-color: var(--accent-purple);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+/* LIVE PREVIEW CANVAS WORKSPACE */
+.preview-workspace {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px;
+  background-color: #0b0f19;
+}
+
+/* THE INVOICE SHEET TARGET (A4 PAPER SPECIFICATION) */
+.invoice-paper-sheet {
+  background-color: var(--bg-sheet);
+  color: var(--text-dark);
+  width: 100%;
+  max-width: 800px;
+  min-height: 1030px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  border-radius: 6px;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 40px;
 }

@@ -16,21 +16,13 @@
         
         <div class="form-scroll-container">
           <div id="invoice-form-target">
+            
             <div class="form-group-section">
-              <h3>Invoice Line Items</h3>
-              
-              <div id="dynamic-items-list"></div>
-              
-              <button type="button" id="add-item-btn" class="btn-secondary">
-                + Add Line Item
-              </button>
-            </div>
-              
+              <h3>Document Metadata</h3>
               <div class="input-atom">
                 <label for="invoice-id">Invoice Number</label>
                 <input type="text" id="invoice-id" placeholder="INV-2026-001" autocomplete="off" />
               </div>
-
               <div class="input-atom">
                 <label for="currency-select">Transaction Currency</label>
                 <select id="currency-select">
@@ -44,27 +36,31 @@
 
             <div class="form-group-section">
               <h3>Stakeholders</h3>
-              
               <div class="input-atom">
                 <label for="vendor-name">Your Business / Name</label>
                 <input type="text" id="vendor-name" placeholder="e.g., Virk Bakery Solutions" autocomplete="off" />
               </div>
-
               <div class="input-atom">
                 <label for="client-name">Client Name / Company</label>
                 <input type="text" id="client-name" placeholder="e.g., Manto Logistics" autocomplete="off" />
               </div>
             </div>
+
+            <div class="form-group-section">
+              <h3>Invoice Line Items</h3>
+              <div id="dynamic-items-list" class="items-overflow-deck"></div>
+              <button type="button" id="add-item-btn" class="btn-secondary">
+                + Add Line Item
+              </button>
+            </div>
+
           </div>
         </div>
       </aside>
 
       <main class="preview-workspace">
         <div class="invoice-paper-sheet" id="invoice-preview-target">
-          <div class="empty-state-notice">
-            <p>Fill in the configuration panel to generate your invoice.</p>
           </div>
-        </div>
       </main>
     </div>
 
