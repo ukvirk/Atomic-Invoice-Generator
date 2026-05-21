@@ -1,8 +1,6 @@
 import './style.css';
 
-// ==========================================
-// 1. DATA ARCHITECTURE & GLOBAL STATE
-// ==========================================
+// 1. DATA STATE
 interface LineItem {
   id: string;
   description: string;
@@ -12,203 +10,198 @@ interface LineItem {
 
 let lineItems: LineItem[] = [];
 
-// ==========================================
-// 2. CORE DOM SELECTION ENGINE
-// ==========================================
-// Sidebar Interactive Nodes
+// 2. DOM NODES
 const itemsContainer = document.getElementById('dynamic-items-list') as HTMLDivElement;
 const addItemButton = document.getElementById('add-item-btn') as HTMLButtonElement;
 const invoiceIdInput = document.getElementById('invoice-id') as HTMLInputElement;
 const currencySelect = document.getElementById('currency-select') as HTMLSelectElement;
 const vendorNameInput = document.getElementById('vendor-name') as HTMLInputElement;
 const clientNameInput = document.getElementById('client-name') as HTMLInputElement;
-
-// Live Preview Sheet Target Node
 const previewTarget = document.getElementById('invoice-preview-target') as HTMLDivElement;
 
-// ==========================================
-// 3. CURRENCY ENGINE (INTL SPECIFICATION)
-// ==========================================
-function formatCurrencyValue(amount: number, currencyCode: string): string {
-  try {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currencyCode,
-      minimumFractionDigits: 2
-    }).format(amount);
-  } catch (error) {
-    // Fallback if formatting breaks or rare currency codes fail
-    return `${currencyCode} ${amount.toFixed(2)}`;
-  }
+// 3. CURRENCY FORMATTER
+function formatCurrency(amount: number, currencyCode: string): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currencyCode,
+  }).format(amount);
 }
 
-// ==========================================
-// 4. PREVIEW SHEET RENDERING ENGINE
-// ==========================================
-function updateInvoicePreviewDisplay() {
-  const invoiceId = invoiceIdInput.value || 'INV-2026-XXX';
+// 4. RENDER ENGINE (NEO-BRUTALIST LAYOUT)
+function renderInvoice() {
+  const invoiceId = invoiceIdInput.value || 'INV-000';
   const currency = currencySelect.value;
-  const vendorName = vendorNameInput.value || 'Your Company Name';
-  const clientName = clientNameInput.value || 'Client Company Name';
+  const vendorName = vendorNameInput.value || 'YOUR AGENCY';
+  const clientName = clientNameInput.value || 'CLIENT CORP';
 
-  // Perform Calculations
   let subtotal = 0;
-  lineItems.forEach(item => {
-    subtotal += item.quantity * item.price;
-  });
-  
-  const taxRate = 0.15; // Strict 15% System Tax Specification
+  lineItems.forEach(item => subtotal += item.quantity * item.price);
+  const taxRate = 0.15;
   const taxAmount = subtotal * taxRate;
   const totalAmount = subtotal + taxAmount;
 
-  // Generate Items Rows for the Paper Sheet
-  let invoiceRowsHTML = '';
+  let rowsHTML = '';
   if (lineItems.length === 0) {
-    invoiceRowsHTML = `<tr><td colspan="4" style="text-align: center; color: #94a3b8; padding: 20px;">No items added</td></tr>`;
+    rowsHTML = `<tr><td colspan="4" style="padding: 40px 0; color: #A6A8B8; text-align: center;">Awaiting Data Injection...</td></tr>`;
   } else {
     lineItems.forEach(item => {
-      const itemDesc = item.description || 'Untitled Item';
       const rowTotal = item.quantity * item.price;
-      invoiceRowsHTML += `
+      rowsHTML += `
         <tr>
-          <td style="padding: 12px 0; border-bottom: 1px solid #e2e8f0;">${itemDesc}</td>
-          <td style="padding: 12px 0; text-align: center; border-bottom: 1px solid #e2e8f0;">${item.quantity}</td>
-          <td style="padding: 12px 0; text-align: right; border-bottom: 1px solid #e2e8f0;">${formatCurrencyValue(item.price, currency)}</td>
-          <td style="padding: 12px 0; text-align: right; border-bottom: 1px solid #e2e8f0; font-weight: 600;">${formatCurrencyValue(rowTotal, currency)}</td>
+          <td style="padding: 24px 0; border-bottom: 2px solid #000; font-family: 'Space Grotesk'; font-weight: 600; font-size: 16px;">${item.description || 'Data Unit'}</td>
+          <td style="padding: 24px 0; border-bottom: 2px solid #000; text-align: center; font-family: 'Space Grotesk';">${item.quantity}</td>
+          <td style="padding: 24px 0; border-bottom: 2px solid #000; text-align: right; font-family: 'Space Grotesk';">${formatCurrency(item.price, currency)}</td>
+          <td style="padding: 24px 0; border-bottom: 2px solid #000; text-align: right; font-family: 'Space Grotesk'; font-weight: 700; color: #FF1A69;">${formatCurrency(rowTotal, currency)}</td>
         </tr>
       `;
     });
   }
 
-  // Inject Pure-Paper Production Layout into the White Sheet Container
   previewTarget.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; width: 100%;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px;">
       <div>
-        <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 4px; letter-spacing: -1px;">INVOICE</h1>
-        <p style="font-size: 14px; color: #475569; font-weight: 600;">ID: ${invoiceId}</p>
+        <h1 style="font-family: 'Montserrat'; font-size: 64px; font-weight: 900; letter-spacing: -3px; line-height: 1;">INVOICE</h1>
+        <p style="font-family: 'Space Grotesk'; font-size: 16px; color: #A6A8B8; margin-top: 8px;">ID // ${invoiceId}</p>
       </div>
       <div style="text-align: right;">
-        <h3 style="font-size: 16px; font-weight: 700; color: #0f172a;">${vendorName}</h3>
+        <h2 style="font-family: 'Montserrat'; font-size: 24px; font-weight: 900; letter-spacing: -1px;">${vendorName}</h2>
       </div>
     </div>
 
-    <div style="margin-bottom: 40px; border-top: 2px solid #0f172a; padding-top: 20px;">
-      <h4 style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 6px;">Billed To:</h4>
-      <p style="font-size: 16px; font-weight: 700; color: #1e293b;">${clientName}</p>
+    <div style="background-color: #000; color: #fff; padding: 30px; margin-bottom: 60px;">
+      <p style="font-family: 'Space Grotesk'; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #A6ECF2; margin-bottom: 8px;">Billed Entity</p>
+      <h3 style="font-family: 'Montserrat'; font-size: 32px; font-weight: 700; letter-spacing: -1px;">${clientName}</h3>
     </div>
 
-    <table style="width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 40px;">
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 80px;">
       <thead>
-        <tr style="border-bottom: 2px solid #cbd5e1; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">
-          <th style="padding-bottom: 8px; font-weight: 700;">Description</th>
-          <th style="padding-bottom: 8px; text-align: center; font-weight: 700; width: 80px;">Qty</th>
-          <th style="padding-bottom: 8px; text-align: right; font-weight: 700; width: 120px;">Unit Price</th>
-          <th style="padding-bottom: 8px; text-align: right; font-weight: 700; width: 120px;">Amount</th>
+        <tr>
+          <th style="text-align: left; padding-bottom: 16px; border-bottom: 4px solid #000; font-family: 'Montserrat'; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Description</th>
+          <th style="text-align: center; padding-bottom: 16px; border-bottom: 4px solid #000; font-family: 'Montserrat'; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Qty</th>
+          <th style="text-align: right; padding-bottom: 16px; border-bottom: 4px solid #000; font-family: 'Montserrat'; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Price</th>
+          <th style="text-align: right; padding-bottom: 16px; border-bottom: 4px solid #000; font-family: 'Montserrat'; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Total</th>
         </tr>
       </thead>
       <tbody>
-        ${invoiceRowsHTML}
+        ${rowsHTML}
       </tbody>
     </table>
 
-    <div style="margin-left: auto; width: 300px; border-top: 1px solid #cbd5e1; padding-top: 16px;">
-      <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #475569;">
-        <span>Subtotal:</span>
-        <span>${formatCurrencyValue(subtotal, currency)}</span>
+    <div style="margin-left: auto; width: 400px;">
+      <div style="display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #E2E8F0; font-family: 'Space Grotesk';">
+        <span style="color: #6A797E;">Subtotal</span>
+        <span style="font-weight: 600;">${formatCurrency(subtotal, currency)}</span>
       </div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; color: #475569;">
-        <span>Tax (15%):</span>
-        <span>${formatCurrencyValue(taxAmount, currency)}</span>
+      <div style="display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #E2E8F0; font-family: 'Space Grotesk';">
+        <span style="color: #6A797E;">Tax (15%)</span>
+        <span style="font-weight: 600;">${formatCurrency(taxAmount, currency)}</span>
       </div>
-      <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; color: #0f172a; border-top: 2px solid #0f172a; padding-top: 12px;">
-        <span>Total Due:</span>
-        <span>${formatCurrencyValue(totalAmount, currency)}</span>
+      <div style="display: flex; justify-content: space-between; padding: 24px 0; margin-top: 16px; border-top: 4px solid #000; font-family: 'Montserrat'; font-size: 32px; font-weight: 900; letter-spacing: -1px;">
+        <span>TOTAL</span>
+        <span style="color: #FF1A69;">${formatCurrency(totalAmount, currency)}</span>
       </div>
     </div>
   `;
 }
 
-// ==========================================
-// 5. ATOMIC ELEMENT LIFECYCLE MANAGEMENT
-// ==========================================
-function syncRowInputsToState(rowWrapper: HTMLDivElement, id: string) {
-  const descInput = rowWrapper.querySelector('.item-desc') as HTMLInputElement;
-  const qtyInput = rowWrapper.querySelector('.item-qty') as HTMLInputElement;
-  const priceInput = rowWrapper.querySelector('.item-price') as HTMLInputElement;
+// 5. ATOMIC ROW BUILDER
+function createRowNode(id: string): HTMLDivElement {
+  const row = document.createElement('div');
+  row.className = 'item-row-atom';
+  row.setAttribute('data-id', id);
 
-  const updateState = () => {
-    const targetItem = lineItems.find(item => item.id === id);
-    if (targetItem) {
-      targetItem.description = descInput.value;
-      targetItem.quantity = Math.max(1, parseInt(qtyInput.value) || 1);
-      targetItem.price = Math.max(0, parseFloat(priceInput.value) || 0);
-      updateInvoicePreviewDisplay();
-    }
-  };
-
-  descInput.addEventListener('input', updateState);
-  qtyInput.addEventListener('input', updateState);
-  priceInput.addEventListener('input', updateState);
-}
-
-function createItemRowNode(id: string): HTMLDivElement {
-  const rowWrapper = document.createElement('div');
-  rowWrapper.className = 'item-row-atom';
-  rowWrapper.setAttribute('data-id', id);
-
-  rowWrapper.innerHTML = `
-    <input type="text" class="item-desc" placeholder="Item description" autocomplete="off" />
-    <input type="number" class="item-qty" placeholder="Qty" min="1" value="1" />
-    <input type="number" class="item-price" placeholder="Price" min="0" step="0.01" />
-    <button type="button" class="delete-row-btn" title="Remove Item">×</button>
+  row.innerHTML = `
+    <input type="text" class="item-desc" placeholder="Data Unit" autocomplete="off" />
+    <input type="number" class="item-qty" placeholder="0" min="1" value="1" />
+    <input type="number" class="item-price" placeholder="0.00" min="0" step="0.01" />
+    <button type="button" class="delete-row-btn">×</button>
   `;
 
-  const deleteBtn = rowWrapper.querySelector('.delete-row-btn') as HTMLButtonElement;
-  deleteBtn.addEventListener('click', () => {
-    removeLineItemRow(id);
+  row.querySelector('.delete-row-btn')!.addEventListener('click', () => removeRow(id));
+
+  const inputs = row.querySelectorAll('input');
+  inputs.forEach(input => {
+    input.addEventListener('input', () => {
+      const target = lineItems.find(i => i.id === id);
+      if (target) {
+        target.description = (row.querySelector('.item-desc') as HTMLInputElement).value;
+        target.quantity = Math.max(1, parseInt((row.querySelector('.item-qty') as HTMLInputElement).value) || 1);
+        target.price = Math.max(0, parseFloat((row.querySelector('.item-price') as HTMLInputElement).value) || 0);
+        renderInvoice();
+      }
+    });
+    
+    // Cursor hover logic for inputs
+    input.addEventListener('mouseenter', () => expandCursor());
+    input.addEventListener('mouseleave', () => shrinkCursor());
   });
 
-  // Attach real-time structural listeners directly into the inputs
-  syncRowInputsToState(rowWrapper, id);
-
-  return rowWrapper;
+  return row;
 }
 
-function addNewLineItemRow() {
-  const uniqueId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
-  
-  lineItems.push({
-    id: uniqueId,
-    description: '',
-    quantity: 1,
-    price: 0
-  });
-
-  const freshRowNode = createItemRowNode(uniqueId);
-  itemsContainer.appendChild(freshRowNode);
-  updateInvoicePreviewDisplay();
+function addRow() {
+  const uniqueId = Date.now().toString();
+  lineItems.push({ id: uniqueId, description: '', quantity: 1, price: 0 });
+  itemsContainer.appendChild(createRowNode(uniqueId));
+  renderInvoice();
 }
 
-function removeLineItemRow(id: string) {
+function removeRow(id: string) {
   lineItems = lineItems.filter(item => item.id !== id);
-  const rowVisualElement = itemsContainer.querySelector(`[data-id="${id}"]`);
-  if (rowVisualElement) {
-    rowVisualElement.remove();
-  }
-  updateInvoicePreviewDisplay();
+  const row = itemsContainer.querySelector(`[data-id="${id}"]`);
+  if (row) row.remove();
+  renderInvoice();
 }
 
-// ==========================================
-// 6. GLOBAL EVENT BINDING INITIALIZATION
-// ==========================================
-invoiceIdInput.addEventListener('input', updateInvoicePreviewDisplay);
-currencySelect.addEventListener('change', updateInvoicePreviewDisplay);
-vendorNameInput.addEventListener('input', updateInvoicePreviewDisplay);
-clientNameInput.addEventListener('input', updateInvoicePreviewDisplay);
-addItemButton.addEventListener('click', addNewLineItemRow);
+// 6. KINETIC CURSOR ENGINE & MAGNETIC PHYSICS
+const cursorDot = document.getElementById('cursor-dot') as HTMLDivElement;
+const cursorOutline = document.getElementById('cursor-outline') as HTMLDivElement;
 
-// Execute onboarding sequence
-addNewLineItemRow();
-updateInvoicePreviewDisplay();
+window.addEventListener('mousemove', (e) => {
+  const posX = e.clientX;
+  const posY = e.clientY;
+  
+  cursorDot.style.left = `${posX}px`;
+  cursorDot.style.top = `${posY}px`;
+  
+  cursorOutline.animate({
+    left: `${posX}px`,
+    top: `${posY}px`
+  }, { duration: 500, fill: "forwards" });
+});
 
-console.log("Atomic Invoice System: Live Real-Time Mirror Engine Enabled.");
+function expandCursor() {
+  cursorOutline.style.width = '60px';
+  cursorOutline.style.height = '60px';
+  cursorOutline.style.backgroundColor = 'rgba(255, 26, 105, 0.1)';
+}
+
+function shrinkCursor() {
+  cursorOutline.style.width = '40px';
+  cursorOutline.style.height = '40px';
+  cursorOutline.style.backgroundColor = 'transparent';
+}
+
+// Magnetic Button Logic
+const magneticBtn = document.querySelector('.btn-magnetic') as HTMLButtonElement;
+magneticBtn.addEventListener('mousemove', (e) => {
+  const rect = magneticBtn.getBoundingClientRect();
+  const x = e.clientX - rect.left - rect.width / 2;
+  const y = e.clientY - rect.top - rect.height / 2;
+  magneticBtn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+});
+magneticBtn.addEventListener('mouseleave', () => {
+  magneticBtn.style.transform = `translate(0px, 0px)`;
+});
+magneticBtn.addEventListener('mouseenter', expandCursor);
+magneticBtn.addEventListener('mouseleave', shrinkCursor);
+
+// 7. INITIALIZATION
+invoiceIdInput.addEventListener('input', renderInvoice);
+currencySelect.addEventListener('change', renderInvoice);
+vendorNameInput.addEventListener('input', renderInvoice);
+clientNameInput.addEventListener('input', renderInvoice);
+addItemButton.addEventListener('click', addRow);
+
+addRow();
+renderInvoice();
