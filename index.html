@@ -1,13 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>temp-v3</title>
+    <title>Atomic Invoice Generator</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <aside class="control-sidebar">
+        <header class="sidebar-header">
+          <h2>Atomic Invoice</h2>
+          <p>Configure your document parameters</p>
+        </header>
+        
+        <div class="form-scroll-container">
+          <div id="invoice-form-target"></div>
+        </div>
+      </aside>
+
+      <main class="preview-workspace">
+        <div class="invoice-paper-sheet" id="invoice-preview-target">
+          <div class="empty-state-notice">
+            <p>Fill in the configuration panel to generate your invoice.</p>
+          </div>
+        </div>
+      </main>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
